@@ -1,7 +1,7 @@
-import { renderHome } from "./pages/Home";
-import { renderProducts } from "./pages/Products";
+import { renderHome } from "./pages/home";
+import { renderProducts } from "./pages/products";
 import { renderNotFound } from "./pages/notfound";
-import { renderDetails } from "./pages/Details";
+import { renderDetails } from "./pages/details";
 import { createLayout } from "./layout";
 
 export function initRouter(): void {
