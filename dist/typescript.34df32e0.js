@@ -714,14 +714,14 @@ function renderRoute() {
     (0, _layout.createLayout)(contentFn);
 }
 
-},{"./pages/notfound":"20OKX","./layout":"aUJjy","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./pages/home":"l0Soh","./pages/products":"kgp9M","./pages/details":"9ejvE"}],"20OKX":[function(require,module,exports,__globalThis) {
+},{"./pages/products":"kgp9M","./pages/notfound":"20OKX","./pages/details":"9ejvE","./layout":"aUJjy","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","./pages/home":"l0Soh"}],"kgp9M":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "renderNotFound", ()=>renderNotFound);
-function renderNotFound() {
+parcelHelpers.export(exports, "renderProducts", ()=>renderProducts);
+function renderProducts() {
     const div = document.createElement("div");
     div.innerHTML = `
-    <h1>Page not found</h1>
+    <h1>ProductPage</h1>
   `;
     return div;
 }
@@ -756,7 +756,31 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"aUJjy":[function(require,module,exports,__globalThis) {
+},{}],"20OKX":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "renderNotFound", ()=>renderNotFound);
+function renderNotFound() {
+    const div = document.createElement("div");
+    div.innerHTML = `
+    <h1>Page not found</h1>
+  `;
+    return div;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9ejvE":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "renderDetails", ()=>renderDetails);
+function renderDetails() {
+    const div = document.createElement("div");
+    div.innerHTML = `
+    <h1>DetailsPage</h1>
+  `;
+    return div;
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"aUJjy":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "createLayout", ()=>createLayout);
@@ -804,30 +828,7 @@ parcelHelpers.export(exports, "renderHome", ()=>renderHome);
 function renderHome() {
     const div = document.createElement("div");
     div.innerHTML = `
-    <h1>HomePage</h1>
-  `;
-    return div;
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kgp9M":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "renderProducts", ()=>renderProducts);
-function renderProducts() {
-    const div = document.createElement("div");
-    div.innerHTML = `
-    <h1>HomePage</h1>
-  `;
-    return div;
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9ejvE":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "renderDetails", ()=>renderDetails);
-function renderDetails() {
-    const div = document.createElement("div");
-    div.innerHTML = `
+    <a href="/products" data-link>ClickToProduct</a>
     <h1>HomePage</h1>
   `;
     return div;

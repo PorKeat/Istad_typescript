@@ -729,6 +729,7 @@ exports.renderHome = renderHome;
 function renderHome() {
     const div = document.createElement("div");
     div.innerHTML = `
+    <a href="./pages/products.ts">ClickToProduct</a>
     <h1>HomePage</h1>
   `;
     return div;
@@ -743,7 +744,7 @@ exports.renderProducts = renderProducts;
 function renderProducts() {
     const div = document.createElement("div");
     div.innerHTML = `
-    <h1>HomePage</h1>
+    <h1>ProductPage</h1>
   `;
     return div;
 }
@@ -771,7 +772,7 @@ exports.renderDetails = renderDetails;
 function renderDetails() {
     const div = document.createElement("div");
     div.innerHTML = `
-    <h1>HomePage</h1>
+    <h1>DetailsPage</h1>
   `;
     return div;
 }
