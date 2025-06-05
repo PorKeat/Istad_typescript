@@ -1,4 +1,4 @@
-4350
+4352
 88C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tar\dist\commonjs\replace.d.ts133934747332805615 0
 100C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-image\lib\loadSharp.js133934747107940346 0
 57C:\Users\AlexKGM\OneDrive\Desktop\typescript\package.json133934752647227038 0
@@ -17,7 +17,7 @@
 77C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\dotenv\package.json133934747108242652 0
 88C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\semver\internal\identifiers.js133934747109366428 0
 91C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\_\_iterable_to_array133934747112547894 1
-49C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist133935861580764122 1
+49C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist133935865692617477 1
 91C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\semver\functions\compare-loose.js133934747108737945 0
 74C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\type-fest\source133934747110180769 1
 75C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\semver\preload.js133934747110030756 0
@@ -59,7 +59,7 @@
 48C:\Users\AlexKGM\OneDrive\Desktop\typescript\src133935793916181149 1
 80C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tar\dist\esm\pack.d.ts133934747332729218 0
 75C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\nanoid\index.d.ts133934747330514482 0
-58C:\Users\AlexKGM\OneDrive\Desktop\typescript\tsconfig.json133935795233246799 0
+58C:\Users\AlexKGM\OneDrive\Desktop\typescript\tsconfig.json133935863998510897 0
 81C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\runtime-rsc\lib133934747107305310 1
 98C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\types-internal\lib\FilePath.d.ts133934747109490463 0
 92C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@jridgewell\resolve-uri\dist\types133934747330160597 1
@@ -82,7 +82,7 @@
 58C:\Users\AlexKGM\OneDrive\Desktop\typescript\src\index.css133934747870222341 0
 83C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@jridgewell\trace-mapping133934747330140444 1
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tar\dist\commonjs\pack.d.ts.map133934747331835341 0
-59C:\Users\AlexKGM\OneDrive\Desktop\typescript\src\index.html133935791779582217 0
+59C:\Users\AlexKGM\OneDrive\Desktop\typescript\src\index.html133935865636260491 0
 72C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\to-regex-range133934747107746543 1
 72C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\semver\LICENSE133934747106971781 0
 79C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\utility-types\LICENSE133934747106951786 0
@@ -672,7 +672,7 @@
 77C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\type-fest\readme.md133934747107658982 0
 111C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\react-refresh\cjs\react-refresh-runtime.production.js133934747108412829 0
 71C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tslib\modules133934747109072869 1
-68C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Card.js133935861364911608 0
+68C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Card.js133935864023486829 0
 72C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\type-fest\ts41133934747110070755 1
 134C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\msgpackr-extract\node_modules\node-gyp-build-optional-packages\build-test.js133934747107565394 0
 85C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\rust\lib\browser.js133934747107605386 0
@@ -693,7 +693,7 @@
 88C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\type-fest\ts41\snake-case.d.ts133934747110080753 0
 84C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\watcher\src\kqueue133934747110030756 1
 133C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\msgpackr-extract\node_modules\node-gyp-build-optional-packages\package.json133934747108412829 0
-67C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\products.js133935861364814202 0
+67C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\products.js133935864023391596 0
 91C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tar\dist\commonjs\mode-fix.js.map133934747331240210 0
 97C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\type-fest\source\async-return-type.d.ts133934747107982651 0
 96C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\runtime-service-worker\LICENSE133934747107011797 0
@@ -845,7 +845,7 @@
 80C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\to-regex-range\LICENSE133934747107518094 0
 84C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-js\src133934747108737945 1
 95C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\caniuse-lite\data\features\netinfo.js133934747114658578 0
-59C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\layout.js133935861364874048 0
+59C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\layout.js133935864023446735 0
 85C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\to-regex-range\package.json133934747106911782 0
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\caniuse-lite\data\regions\ET.js133934747112910007 0
 93C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\tar\dist\commonjs\make-command.d.ts133934747332588702 0
@@ -974,7 +974,7 @@
 74C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\get-port\license133934747107833906 0
 115C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\lmdb\dependencies\lmdb-data-v1\libraries\liblmdb\Doxyfile133934747108457948 0
 71C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\cache133934747109257612 1
-58C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\index.js133935861364902647 0
+58C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\index.js133935864023486829 0
 82C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\postcss\lib\processor.js133934747330514482 0
 80C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\picomatch\CHANGELOG.md133934747108951828 0
 95C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\mkdirp\dist\cjs\src\opts-arg.d.ts.map133934747330734151 0
@@ -1935,7 +1935,7 @@
 98C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\mkdirp\dist\cjs\src\mkdirp-manual.js.map133934747330628927 0
 96C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\mkdirp\dist\cjs\src\mkdirp-native.d.ts133934747330928501 0
 98C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\mkdirp\dist\cjs\src\mkdirp-native.js.map133934747330714172 0
-66C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\details.js133935861364834009 0
+66C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\details.js133935864023411601 0
 94C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\caniuse-lite\data\features\brotli.js133934747110772014 0
 91C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\mkdirp\dist\cjs\src\opts-arg.d.ts133934747330938560 0
 75C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\jiti\lib\jiti.mjs133934747330734151 0
@@ -2370,7 +2370,7 @@
 97C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\enhanced-resolve\lib\util\identifier.js133934747330467581 0
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\caniuse-lite\data\regions\KR.js133934747113876041 0
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@tailwindcss\oxide\package.json133934747333121539 0
-70C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Footer.js133935861364844916 0
+70C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Footer.js133935864023421603 0
 101C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\core\src\requests\PackageRequest.js133934747111074514 0
 101C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\enhanced-resolve\lib\util\module-browser.js133934747330547751 0
 109C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\caniuse-lite\data\features\css-media-interaction.js133934747111939998 0
@@ -3582,7 +3582,7 @@
 95C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\cjs\_read_only_error.cjs133934747110650352 0
 105C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\cjs\_skip_first_generator_next.cjs133934747110680364 0
 95C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\cjs\_sliced_to_array.cjs133934747110700359 0
-72C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Skeleton.js133935861364911608 0
+72C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Skeleton.js133935864023486829 0
 101C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\cjs\_sliced_to_array_loose.cjs133934747110690360 0
 103C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@swc\helpers\cjs\_tagged_template_literal.cjs133934747110736239 0
 84C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\types-internal\src133934747109202866 1
@@ -3795,7 +3795,7 @@
 85C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-raw\lib133934747107305310 1
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-raw\LICENSE133934747106991796 0
 94C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-raw\package.json133934747107930269 0
-56C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\api.js133935861364752999 0
+56C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\api.js133935864023345635 0
 85C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-raw\src133934747107615389 1
 116C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\core\test\fixtures\library-scopehoist\package.json133934747112154338 0
 103C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\transformer-raw\src\RawTransformer.js133934747107683518 0
@@ -4014,6 +4014,7 @@
 92C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\namer-default\package.json133934747108002661 0
 83C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\namer-default\src133934747107629475 1
 99C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\namer-default\lib\DefaultNamer.js133934747107406688 0
+72C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\typescript.a62c4ae9.js133935865692603697 0
 84C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\cache\lib\index.js133934747108777952 0
 87C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\markdown-ansi\LICENSE133934747106931782 0
 83C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\@parcel\markdown-ansi\src133934747107575389 1
@@ -4339,13 +4340,14 @@
 73C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\.bin\semver.ps1133934747117190331 0
 85C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\.bin\update-browserslist-db133934747117200550 0
 89C:\Users\AlexKGM\OneDrive\Desktop\typescript\node_modules\.bin\update-browserslist-db.ps1133934747117200550 0
-60C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\index.html133935858055997949 0
+60C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\index.html133935865692603697 0
 55C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages133935861364823859 1
-59C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\router.js133935861364890533 0
+59C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\router.js133935864023476834 0
 73C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\typescript.463b152d.css133935858056003376 0
 77C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\typescript.463b152d.css.map133935858056128635 0
+76C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\typescript.a62c4ae9.js.map133935865692617477 0
 76C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\typescript.f07d7727.js.map133935858056128635 0
-63C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\home.js133935861364803131 0
-67C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\notfound.js133935861364823859 0
-70C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Navbar.js133935861364834009 0
+63C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\home.js133935864023391596 0
+67C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\pages\notfound.js133935864023401604 0
+70C:\Users\AlexKGM\OneDrive\Desktop\typescript\dist\components\Navbar.js133935864023421603 0
 56C:\Users\AlexKGM\OneDrive\Desktop\typescript\assets\logo133935700085976471 1
