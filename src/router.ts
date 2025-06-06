@@ -20,25 +20,26 @@ export function initRouter(): void {
   renderRoute();
 }
 
-function renderRoute(): void {
+async function renderRoute(): Promise<void> {
   const pathname = window.location.pathname;
 
-  let contentFn: () => HTMLElement;
+  let content: HTMLElement;
 
   switch (pathname) {
     case "/":
-      contentFn = renderHome;
+      content = renderHome();
       break;
     case "/products":
-      contentFn = renderProducts;
+      content = await renderProducts();
       break;
     case "/details":
-      contentFn = renderDetails;
-      break; 
+      content = renderDetails();
+      break;
     default:
-      contentFn = renderNotFound;
+      content = renderNotFound();
       break;
   }
 
-  createLayout(contentFn);
+  createLayout(() => content);
 }
+
