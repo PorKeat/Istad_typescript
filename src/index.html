@@ -3,7 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>VUALTIX - Product Store</title>
+
+    <!-- Tailwind CSS CDN with dark mode support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              blue: {
+                50: "#eff6ff",
+                400: "#60a5fa",
+                500: "#3b82f6",
+                600: "#2563eb",
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -11,11 +33,27 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <!-- Your custom styles -->
     <link href="./index.css" type="text/css" rel="stylesheet" />
+
+    <!-- Prevent flash of unstyled content in dark mode -->
+    <script>
+      // Apply dark mode immediately if stored preference or system preference
+      if (
+        localStorage.getItem("darkMode") === "true" ||
+        (!localStorage.getItem("darkMode") &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
   </head>
-  <body>
-    <div id="app"></div>
-    <!-- <script type="module" src="./index.ts"></script> -->
-    <script type="module" src="../dist/index.js"></script> 
+  <body
+    id="app"
+    class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors"
+  >
+    <script type="module" src="./index.ts"></script>
+    <!-- <script type="module" src="../dist/index.js"></script>  -->
   </body>
 </html>

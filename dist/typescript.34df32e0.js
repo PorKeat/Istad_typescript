@@ -676,13 +676,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "initRouter", ()=>initRouter);
+// Export renderRoute so navbar can call it directly if needed
+parcelHelpers.export(exports, "renderRoute", ()=>renderRoute);
 var _home = require("./pages/home");
 var _products = require("./pages/products");
 var _notfound = require("./pages/notfound");
 var _details = require("./pages/details");
 var _layout = require("./layout");
 function initRouter() {
+    // Listen for browser back/forward
     window.addEventListener("popstate", renderRoute);
+    // Listen for the custom navigate event from navbar
+    window.addEventListener("navigate", (e)=>{
+        const customEvent = e;
+        console.log("Navigation details:", customEvent.detail);
+        renderRoute();
+    });
+    // Legacy support for data-link attributes (if you have any other links)
     document.addEventListener("click", (e)=>{
         const target = e.target;
         if (target.tagName === "A" && target.hasAttribute("data-link")) {
@@ -692,42 +702,173 @@ function initRouter() {
             renderRoute();
         }
     });
+    // Initial render
     renderRoute();
 }
 async function renderRoute() {
     const pathname = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
     let content;
-    switch(pathname){
-        case "/":
-            content = (0, _home.renderHome)();
-            break;
-        case "/products":
-            content = await (0, _products.renderProducts)();
-            break;
-        case "/details":
-            content = (0, _details.renderDetails)();
-            break;
-        default:
-            content = (0, _notfound.renderNotFound)();
-            break;
+    try {
+        switch(pathname){
+            case "/":
+                content = await (0, _home.renderHome)();
+                break;
+            case "/products":
+                content = await (0, _products.renderProducts)();
+                break;
+            case "/details":
+                content = await (0, _details.renderProductDetails)();
+                break;
+            default:
+                // Handle dynamic routes or show 404
+                if (pathname.startsWith("/products/")) // Example: /products/123 - product detail page
+                content = await (0, _details.renderProductDetails)();
+                else content = (0, _notfound.renderNotFound)();
+                break;
+        }
+        (0, _layout.createLayout)(()=>content);
+    } catch (error) {
+        console.error("Error rendering route:", error);
+        content = (0, _notfound.renderNotFound)();
+        (0, _layout.createLayout)(()=>content);
     }
-    (0, _layout.createLayout)(()=>content);
 }
 
 },{"./pages/home":"l0Soh","./pages/products":"kgp9M","./pages/notfound":"20OKX","./pages/details":"9ejvE","./layout":"aUJjy","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"l0Soh":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "renderHome", ()=>renderHome);
-function renderHome() {
+var _api = require("../api");
+async function renderHome() {
+    const products = await (0, _api.fetchProducts)();
     const div = document.createElement("div");
+    const productCards = products.slice(0, 8).map((product)=>`
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700">
+          <a href="/details?id=${product.id}" class="block">
+            <div class="relative overflow-hidden">
+              <img 
+                src="${product.images[0]}" 
+                alt="${product.title}" 
+                class="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full text-sm font-semibold">
+                ${Math.round(product.discountPercentage)}% OFF
+              </div>
+            </div>
+
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-black dark:text-white font-medium text-sm uppercase tracking-wider bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                  ${product.brand}
+                </span>
+                <div class="flex text-black dark:text-yellow-400">
+                  ${"\u2605".repeat(Math.floor(product.rating || 4))}${"\u2606".repeat(5 - Math.floor(product.rating || 4))}
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-black dark:group-hover:text-white transition-colors">
+                ${product.title}
+              </h3>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <p class="text-2xl font-bold text-black dark:text-white">
+                    ${(product.price * (1 - product.discountPercentage / 100)).toFixed(2)}
+                  </p>
+                  <del class="text-gray-400 dark:text-gray-500 text-lg">
+                    ${product.price.toFixed(2)}
+                  </del>
+                </div>
+
+                <button class="bg-black hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </a>
+        </div>
+      `).join("");
     div.innerHTML = `
-    <a href="/products" data-link>ClickToProduct</a>
-    <h1>HomePage</h1>
+    <main class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      <!-- Hero Section -->
+      <section class="relative w-full mx-auto flex items-center bg-cover bg-center overflow-hidden"
+               style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1422190441165-ec2956dc9ecc'); height: 60vh;">
+        <div class="relative container mx-auto px-6 text-center">
+          <h1 class="text-5xl md:text-6xl text-white font-bold mb-6 leading-tight">
+            Discover Amazing
+            <span class="text-white underline decoration-4 underline-offset-8">
+              Products
+            </span>
+          </h1>
+          <p class="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
+            Stripy Zig Zag Jigsaw Pillow and Duvet Set - Transform your bedroom into a cozy sanctuary
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a class="bg-white text-black py-4 px-8 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg" href="/products">
+              Shop Now
+            </a>
+            <a class="bg-transparent border-2 border-white text-white py-4 px-8 rounded-full font-semibold hover:bg-white hover:text-black transition-all duration-300" href="#">
+              Learn More
+            </a>
+          </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div class="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full blur-xl animate-pulse delay-500"></div>
+      </section>
+
+      <!-- Products Section -->
+      <section class="py-16 relative bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
+        <div class="container mx-auto px-6">
+          <!-- Section Header -->
+          <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-black dark:text-white mb-4">
+              Featured 
+              <span class="underline decoration-4 underline-offset-8">
+                Collection
+              </span>
+            </h2>
+            <p class="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
+              Discover our handpicked selection of premium products at unbeatable prices
+            </p>
+            <div class="mt-6 w-24 h-1 bg-black dark:bg-white mx-auto rounded-full"></div>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            ${productCards}
+          </div>
+
+          <!-- Call to Action -->
+          <div class="text-center mt-16">
+            <a href="/products" class="inline-flex items-center bg-black text-white py-4 px-8 rounded-full font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
+              Shop All Products
+              <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Background Decorations -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div class="absolute top-1/4 -left-20 w-40 h-40 bg-gray-200/50 dark:bg-gray-700/40 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-1/4 -right-20 w-60 h-60 bg-gray-300/50 dark:bg-gray-600/40 rounded-full blur-3xl"></div>
+        </div>
+      </section>
+    </main>
   `;
     return div;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"jnFvT":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","../api":"hKNQC"}],"jnFvT":[function(require,module,exports,__globalThis) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -757,71 +898,50 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"kgp9M":[function(require,module,exports,__globalThis) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "renderProducts", ()=>renderProducts);
-var _api = require("../api");
-async function renderProducts() {
-    const products = await (0, _api.fetchProducts)();
-    const container = document.createElement("div");
-    container.className = "p-6";
-    const title = document.createElement("h1");
-    title.className = "text-3xl font-bold mb-6";
-    title.textContent = "Product Page";
-    const grid = document.createElement("div");
-    grid.className = "w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5";
-    products.forEach((product)=>{
-        const card = document.createElement("div");
-        card.className = "bg-white rounded-2xl shadow p-4 hover:shadow-lg transition";
-        card.innerHTML = `
-        <div class="w-72 bg-white rounded-xl duration-500 hover:scale-105 ">
-        <a href="#">
-            <img src="${product.images}" alt="${product.title}" class="h-80 w-72 object-cover rounded-t-xl" />
-            <div class="px-4 py-3 w-72">
-                <span class="text-gray-400 mr-3 uppercase text-xs">${product.brand}</span>
-                <p class="text-lg font-bold text-black truncate block capitalize">${product.title}</p>
-                <div class="flex items-center">
-                    <p class="text-lg font-semibold text-black cursor-auto my-3">$${(product.price / product.discountPercentage).toFixed(2)}</p>
-                    <del>
-                        <p class="text-sm text-gray-600 cursor-auto ml-2">$${product.price}</p>
-                    </del>
-                    <div class="ml-auto"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                            fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z" />
-                            <path
-                                d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z" />
-                        </svg></div>
-                </div>
-            </div>
-        </a>
-    </div>
-    `;
-        grid.appendChild(card);
-    });
-    container.appendChild(title);
-    container.appendChild(grid);
-    return container;
-}
-
-},{"../api":"hKNQC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"hKNQC":[function(require,module,exports,__globalThis) {
+},{}],"hKNQC":[function(require,module,exports,__globalThis) {
+// api.ts
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "fetchProducts", ()=>fetchProducts);
+parcelHelpers.export(exports, "fetchProductsBySearch", ()=>fetchProductsBySearch);
+parcelHelpers.export(exports, "fetchProductById", ()=>fetchProductById);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
 const baseUrl = "https://dummyjson.com";
 const endPoint = "/products";
 async function fetchProducts() {
+    const allProducts = [];
+    const limit = 30;
+    let skip = 0;
+    let total = Infinity;
     try {
-        const response = await (0, _axiosDefault.default).get(`${baseUrl}${endPoint}`);
-        console.log("Fetched service data:", response.data);
-        return response.data.products;
+        while(allProducts.length < total){
+            const response = await (0, _axiosDefault.default).get(`${baseUrl}${endPoint}?limit=${limit}&skip=${skip}`);
+            const data = response.data;
+            const products = data.products;
+            total = data.total;
+            allProducts.push(...products);
+            skip += limit;
+        }
+        console.log(`Fetched all products: ${allProducts.length}`);
+        return allProducts;
     } catch (error) {
         console.error("Fetch error:", error);
         return [];
     }
+}
+async function fetchProductsBySearch(query) {
+    try {
+        const response = await (0, _axiosDefault.default).get(`${baseUrl}${endPoint}/search?q=${encodeURIComponent(query)}`);
+        return response.data.products;
+    } catch (error) {
+        console.error("Search error:", error);
+        return [];
+    }
+}
+async function fetchProductById(id) {
+    const res = await fetch(`https://dummyjson.com/products/${id}`);
+    return res.json();
 }
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","axios":"kooH4"}],"kooH4":[function(require,module,exports,__globalThis) {
@@ -5601,6 +5721,204 @@ Object.entries(HttpStatusCode).forEach(([key, value])=>{
 });
 exports.default = HttpStatusCode;
 
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"kgp9M":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "renderProducts", ()=>renderProducts);
+var _api = require("../api");
+var _skeleton = require("../components/Skeleton");
+function renderProducts() {
+    const container = document.createElement("div");
+    // Initial layout with an empty grid (skeletons inserted below)
+    container.innerHTML = `
+    <main class="min-h-screen bg-white dark:bg-gray-900 transition-colors">
+      <!-- Header Section -->
+      <section class="bg-black text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">All Products</h1>
+          <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+            Discover our complete collection of premium products at unbeatable prices
+          </p>
+          <div class="mt-6 w-24 h-1 bg-white mx-auto rounded-full"></div>
+        </div>
+      </section>
+
+      <!-- Filter Section -->
+      <section class="bg-gray-50 dark:bg-gray-950 py-8 border-b border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-6">
+          <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+              <span id="product-count" class="text-gray-600 dark:text-gray-300 font-medium">
+                Loading...
+              </span>
+            </div>
+            <div class="flex items-center gap-4">
+              <select id="sort-select" class="bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
+                <option value="featured">Sort by: Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="discount">Best Discount</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Grid -->
+      <section class="py-16 bg-gray-50 dark:bg-gray-950 relative">
+        <div class="container mx-auto px-6">
+          <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+            <!-- Skeleton or product cards will be injected here -->
+          </div>
+        </div>
+
+        <!-- Background Decorations -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div class="absolute top-1/4 -left-20 w-40 h-40 bg-gray-200/50 dark:bg-gray-600/30 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-1/4 -right-20 w-60 h-60 bg-gray-300/50 dark:bg-gray-700/30 rounded-full blur-3xl"></div>
+        </div>
+      </section>
+
+      <!-- Back to Home Section -->
+      <section class="bg-black text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+          <h3 class="text-2xl font-bold mb-4">Explore More</h3>
+          <p class="text-gray-300 mb-6">Check out our featured products and special offers</p>
+          <a href="/" class="inline-flex items-center bg-white text-black py-3 px-6 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105">
+            <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+            </svg>
+            Back to Home
+          </a>
+        </div>
+      </section>
+    </main>
+  `;
+    // Show skeletons immediately
+    const productsGrid = container.querySelector("#products-grid");
+    if (productsGrid) productsGrid.appendChild((0, _skeleton.ProductSkeletonGrid)());
+    // Now fetch and render products
+    (0, _api.fetchProducts)().then((products)=>{
+        let filteredProducts = [
+            ...products
+        ];
+        let currentSort = "featured";
+        const sortSelect = container.querySelector("#sort-select");
+        const productCount = container.querySelector("#product-count");
+        function sortProducts(products, sortBy) {
+            const sorted = [
+                ...products
+            ];
+            switch(sortBy){
+                case "price-low":
+                    return sorted.sort((a, b)=>a.price * (1 - a.discountPercentage / 100) - b.price * (1 - b.discountPercentage / 100));
+                case "price-high":
+                    return sorted.sort((a, b)=>b.price * (1 - b.discountPercentage / 100) - a.price * (1 - a.discountPercentage / 100));
+                case "rating":
+                    return sorted.sort((a, b)=>(b.rating || 4) - (a.rating || 4));
+                case "discount":
+                    return sorted.sort((a, b)=>b.discountPercentage - a.discountPercentage);
+                default:
+                    return sorted;
+            }
+        }
+        function renderProductCards(productList) {
+            return productList.map((product)=>`
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700">
+          <a href="/details?id=${product.id}" class="block">
+            <div class="relative overflow-hidden">
+              <img 
+                src="${product.images[0]}" 
+                alt="${product.title}" 
+                loading="lazy"
+                class="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 rounded-full text-sm font-semibold">
+                ${Math.round(product.discountPercentage)}% OFF
+              </div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-black dark:text-white font-medium text-sm uppercase tracking-wider bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                  ${product.brand}
+                </span>
+                <div class="flex text-black dark:text-yellow-400">
+                  ${"\u2605".repeat(Math.floor(product.rating || 4))}${"\u2606".repeat(5 - Math.floor(product.rating || 4))}
+                </div>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-black dark:group-hover:text-white transition-colors">
+                ${product.title}
+              </h3>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <p class="text-2xl font-bold text-black dark:text-white">
+                    ${(product.price * (1 - product.discountPercentage / 100)).toFixed(2)}
+                  </p>
+                  <del class="text-gray-400 dark:text-gray-500 text-lg">
+                    ${product.price.toFixed(2)}
+                  </del>
+                </div>
+                <button class="bg-black hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </a>
+        </div>
+      `).join("");
+        }
+        function updateProductDisplay() {
+            if (productsGrid) productsGrid.innerHTML = renderProductCards(filteredProducts);
+            if (productCount) productCount.textContent = `${filteredProducts.length} Products`;
+        }
+        // Apply initial sort and render
+        filteredProducts = sortProducts(products, currentSort);
+        updateProductDisplay();
+        // Add event listener for sorting
+        if (sortSelect) sortSelect.addEventListener("change", (e)=>{
+            currentSort = e.target.value;
+            filteredProducts = sortProducts(products, currentSort);
+            updateProductDisplay();
+        });
+    });
+    return container;
+}
+
+},{"../api":"hKNQC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","../components/Skeleton":"8BD8M"}],"8BD8M":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "ProductSkeletonGrid", ()=>ProductSkeletonGrid);
+function ProductSkeletonGrid(count = 8) {
+    const skeletonGrid = document.createElement("div");
+    skeletonGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full";
+    for(let i = 0; i < count; i++){
+        const skeletonCard = document.createElement("div");
+        skeletonCard.className = `
+      animate-pulse bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 
+      rounded-2xl shadow p-4 space-y-4 w-full
+    `;
+        skeletonCard.innerHTML = `
+      <div class="h-64 w-full bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+      <div class="flex justify-between items-center">
+        <div class="h-4 w-1/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      </div>
+      <div class="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <div class="flex items-center justify-between mt-4">
+        <div class="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="h-10 w-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+      </div>
+    `;
+        skeletonGrid.appendChild(skeletonCard);
+    }
+    return skeletonGrid;
+}
+
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"20OKX":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
@@ -5608,7 +5926,11 @@ parcelHelpers.export(exports, "renderNotFound", ()=>renderNotFound);
 function renderNotFound() {
     const div = document.createElement("div");
     div.innerHTML = `
-    <h1>Page not found</h1>
+    <div class="h-screen flex flex-col justify-center items-center bg-white dark:bg-gray-900 transition-colors">
+      <h1 class="text-8xl font-bold text-gray-800 dark:text-white">404</h1>
+      <p class="text-4xl font-medium text-gray-800 dark:text-gray-300">Page Not Found</p>
+      <a href="/" class="mt-4 text-xl text-blue-600 dark:text-blue-400 hover:underline">Go back home</a>
+    </div>
   `;
     return div;
 }
@@ -5616,16 +5938,231 @@ function renderNotFound() {
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"9ejvE":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "renderDetails", ()=>renderDetails);
-function renderDetails() {
-    const div = document.createElement("div");
-    div.innerHTML = `
-    <h1>DetailsPage</h1>
-  `;
-    return div;
+parcelHelpers.export(exports, "renderProductDetails", ()=>renderProductDetails);
+var _api = require("../api");
+async function renderProductDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+    if (!productId) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "min-h-screen flex items-center justify-center bg-gray-50";
+        errorDiv.innerHTML = `
+      <div class="text-center p-12 bg-white rounded-3xl shadow-lg border border-gray-100 max-w-md">
+        <div class="text-4xl mb-6">\u{1F50D}</div>
+        <h2 class="text-2xl font-bold text-black mb-4">Product Not Found</h2>
+        <p class="text-gray-600 mb-6">Product ID is missing in URL.</p>
+        <a href="/products" class="inline-block px-8 py-3 bg-black text-white rounded-2xl hover:bg-gray-800 transition-all duration-300">
+          Browse Products
+        </a>
+      </div>
+    `;
+        return errorDiv;
+    }
+    try {
+        const product = await (0, _api.fetchProductById)(Number(productId));
+        const container = document.createElement("div");
+        container.className = "min-h-screen bg-gray-50 py-8";
+        // Add minimal styles
+        const style = document.createElement("style");
+        style.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .fade-in { animation: fadeIn 0.6s ease-out; }
+      .image-hover {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .image-hover:hover {
+        transform: scale(1.02);
+      }
+      .btn-hover {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-hover:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      .card-shadow {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+      .card-shadow:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+    `;
+        document.head.appendChild(style);
+        const content = document.createElement("div");
+        content.className = "max-w-6xl mx-auto px-6 fade-in";
+        // Minimal back button
+        const backLink = document.createElement("a");
+        backLink.href = "/products";
+        backLink.className = "inline-flex items-center gap-2 text-gray-600 hover:text-black mb-8 transition-colors duration-300";
+        backLink.innerHTML = `
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <span class="font-medium">Back</span>
+    `;
+        content.appendChild(backLink);
+        // Main product card
+        const productCard = document.createElement("div");
+        productCard.className = "bg-white rounded-3xl p-8 lg:p-12 card-shadow transition-all duration-500";
+        const productGrid = document.createElement("div");
+        productGrid.className = "grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16";
+        // Image section - clean and minimal
+        const imageSection = document.createElement("div");
+        imageSection.className = "space-y-6";
+        const mainImage = document.createElement("img");
+        mainImage.src = product.images?.[0] || "/placeholder-image.jpg";
+        mainImage.alt = product.title;
+        mainImage.className = "w-full h-96 lg:h-[500px] rounded-2xl object-cover image-hover border border-gray-100";
+        // Simple thumbnail grid
+        const thumbnailGrid = document.createElement("div");
+        thumbnailGrid.className = "flex gap-4 justify-center";
+        if (product.images && product.images.length > 1) product.images.slice(0, 4).forEach((imgSrc, index)=>{
+            const thumb = document.createElement("img");
+            thumb.src = imgSrc;
+            thumb.alt = `${product.title} ${index + 1}`;
+            thumb.className = "w-16 h-16 rounded-xl object-cover cursor-pointer transition-all duration-300 hover:scale-110 border border-gray-200 hover:border-black";
+            thumb.onclick = ()=>{
+                mainImage.src = imgSrc;
+            };
+            thumbnailGrid.appendChild(thumb);
+        });
+        imageSection.appendChild(mainImage);
+        if (product.images && product.images.length > 1) imageSection.appendChild(thumbnailGrid);
+        // Product info - clean typography
+        const info = document.createElement("div");
+        info.className = "space-y-8";
+        // Calculate pricing
+        const originalPrice = product.discountPercentage ? product.price / (1 - product.discountPercentage / 100) : product.price;
+        const savings = originalPrice - product.price;
+        // Generate rating
+        const rating = product.rating || 4.2;
+        const fullStars = Math.floor(rating);
+        const starsHTML = "\u2605".repeat(fullStars) + "\u2606".repeat(5 - fullStars);
+        info.innerHTML = `
+      <!-- Header section -->
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <span class="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+            ${product.brand || "Premium"}
+          </span>
+          <div class="flex items-center gap-2">
+            <span class="text-black text-lg">${starsHTML}</span>
+            <span class="text-gray-500 text-sm">(${rating})</span>
+          </div>
+        </div>
+
+        <h1 class="text-4xl lg:text-5xl font-bold text-black leading-tight">
+          ${product.title}
+        </h1>
+
+        <div class="space-y-2">
+          <div class="flex items-baseline gap-4">
+            <span class="text-4xl font-bold text-black">$${product.price.toFixed(2)}</span>
+            ${savings > 0 ? `
+              <span class="text-xl text-gray-400 line-through">$${originalPrice.toFixed(2)}</span>
+            ` : ""}
+          </div>
+          ${savings > 0 ? `
+            <p class="text-sm text-gray-600">Save $${savings.toFixed(2)} (${product.discountPercentage.toFixed(0)}% off)</p>
+          ` : ""}
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="border-t border-gray-100 pt-8">
+        <p class="text-lg text-gray-700 leading-relaxed">
+          ${product.description}
+        </p>
+      </div>
+
+      <!-- Purchase section -->
+      <div class="border-t border-gray-100 pt-8 space-y-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50">
+            <button class="quantity-btn px-4 py-3 text-black hover:bg-gray-100 transition-colors duration-200 rounded-l-xl" data-action="decrease">\u{2212}</button>
+            <span class="quantity-display px-6 py-3 font-medium text-black bg-white border-x border-gray-200">1</span>
+            <button class="quantity-btn px-4 py-3 text-black hover:bg-gray-100 transition-colors duration-200 rounded-r-xl" data-action="increase">+</button>
+          </div>
+          <div class="text-black font-medium flex items-center gap-2">
+            <div class="w-2 h-2 bg-black rounded-full"></div>
+            <span>In Stock</span>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <button class="add-to-cart-btn w-full py-4 px-8 bg-black text-white font-semibold text-lg rounded-2xl btn-hover">
+            Add to Cart
+          </button>
+          
+          <button class="w-full py-4 px-8 border-2 border-gray-200 text-black font-medium rounded-2xl hover:border-black transition-all duration-300">
+            Add to Wishlist
+          </button>
+        </div>
+
+        <div class="text-center pt-4">
+          <p class="text-sm text-gray-500">
+            Secure checkout \u{2022} Free shipping \u{2022} Easy returns
+          </p>
+        </div>
+      </div>
+    `;
+        productGrid.appendChild(imageSection);
+        productGrid.appendChild(info);
+        productCard.appendChild(productGrid);
+        content.appendChild(productCard);
+        container.appendChild(content);
+        // Add interactivity
+        setTimeout(()=>{
+            const quantityDisplay = container.querySelector(".quantity-display");
+            const quantityBtns = container.querySelectorAll(".quantity-btn");
+            let quantity = 1;
+            quantityBtns.forEach((btn)=>{
+                btn.addEventListener("click", (e)=>{
+                    const action = e.target.dataset.action;
+                    if (action === "increase") quantity++;
+                    else if (action === "decrease" && quantity > 1) quantity--;
+                    if (quantityDisplay) quantityDisplay.textContent = quantity.toString();
+                });
+            });
+            const addToCartBtn = container.querySelector(".add-to-cart-btn");
+            addToCartBtn?.addEventListener("click", ()=>{
+                addToCartBtn.textContent = "Adding...";
+                addToCartBtn.classList.add("opacity-75");
+                setTimeout(()=>{
+                    addToCartBtn.textContent = "Added to Cart!";
+                    addToCartBtn.classList.remove("opacity-75");
+                    addToCartBtn.classList.add("bg-gray-800");
+                    setTimeout(()=>{
+                        addToCartBtn.textContent = "Add to Cart";
+                        addToCartBtn.classList.remove("bg-gray-800");
+                    }, 2000);
+                }, 800);
+            });
+        }, 100);
+        return container;
+    } catch (error) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "min-h-screen flex items-center justify-center bg-gray-50";
+        errorDiv.innerHTML = `
+      <div class="text-center p-12 bg-white rounded-3xl shadow-lg border border-gray-100 max-w-md">
+        <div class="text-4xl mb-6">\u{26A0}\u{FE0F}</div>
+        <h2 class="text-2xl font-bold text-black mb-4">Error Loading Product</h2>
+        <p class="text-gray-600 mb-6">Please try again later.</p>
+        <button onclick="window.location.reload()" class="px-8 py-3 bg-black text-white rounded-2xl hover:bg-gray-800 transition-all duration-300">
+          Retry
+        </button>
+      </div>
+    `;
+        return errorDiv;
+    }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"aUJjy":[function(require,module,exports,__globalThis) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT","../api":"hKNQC"}],"aUJjy":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "createLayout", ()=>createLayout);
@@ -5644,24 +6181,308 @@ function createLayout(contentFn) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Navbar", ()=>Navbar);
+parcelHelpers.export(exports, "navigateTo", ()=>navigateTo);
+parcelHelpers.export(exports, "handleSearch", ()=>handleSearch);
+var _api = require("../api");
 function Navbar() {
     const header = document.createElement("header");
-    header.className = "bg-blue-900 text-white";
+    header.className = "sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow z-50 border-b border-gray-100 dark:border-gray-800 transition-colors";
     header.innerHTML = `
-    <h1>Header</h1>
+    <nav class="w-full py-2">
+      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
+        <!-- Logo -->
+        <a class="flex items-center space-x-2 font-bold text-gray-800 dark:text-gray-200 text-xl hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="/" data-route="/">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span>VUALTIX</span>
+        </a>
+
+        <!-- Search Bar (Desktop) -->
+        <div class="hidden md:flex flex-1 max-w-md mx-8 relative items-center">
+          <svg class="absolute left-3 w-4 h-4 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            id="searchInput"
+            placeholder="Search products..."
+            class="w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+          />
+        </div>
+
+
+        <!-- Navigation & Dark Mode Toggle -->
+        <div class="hidden md:flex items-center space-x-2">
+          <ul class="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300" id="desktopMenu">
+            <li><a class="nav-link px-4 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800" href="#" data-route="/">Home</a></li>
+            <li><a class="nav-link px-4 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800" href="#" data-route="/products">Products</a></li>
+          </ul>
+          
+          <!-- Dark Mode Toggle -->
+          <button id="darkModeToggle" class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Toggle dark mode">
+            <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+            </svg>
+            <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="md:hidden flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+          <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800" id="mobileMenu">
+          <!-- Search bar wrapper -->
+          <div class="p-4 relative flex items-center">
+            <!-- Icon -->
+            <svg class="absolute left-8 w-4 h-4 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+
+            <!-- Input -->
+            <input
+              id="mobileSearchInput"
+              placeholder="Search products..."
+              class="w-full px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Navigation Links -->
+          <ul class="p-4 flex flex-col space-y-1 text-base font-medium text-gray-700 dark:text-gray-300">
+            <li>
+              <a class="nav-link px-4 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800" href="#" data-route="/">Home</a>
+            </li>
+            <li>
+              <a class="nav-link px-4 py-2 rounded-lg hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800" href="#" data-route="/products">Products</a>
+            </li>
+          </ul>
+
+        
+        <!-- Mobile Dark Mode Toggle -->
+        <div class="p-4 border-t border-gray-100 dark:border-gray-800">
+          <button id="mobileDarkModeToggle" class="flex items-center space-x-2 w-full px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">
+            <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+            </svg>
+            <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+            <span class="dark:hidden">Dark Mode</span>
+            <span class="hidden dark:block">Light Mode</span>
+          </button>
+        </div>
+      </div>
+    </nav>
   `;
+    setTimeout(()=>{
+        setupNavbarFunctionality(header);
+    }, 0);
     return header;
 }
+function setupNavbarFunctionality(navbar) {
+    // Initialize dark mode
+    initializeDarkMode();
+    const mobileMenuBtn = navbar.querySelector("#mobileMenuBtn");
+    const mobileMenu = navbar.querySelector("#mobileMenu");
+    if (mobileMenuBtn && mobileMenu) mobileMenuBtn.addEventListener("click", ()=>{
+        mobileMenu.classList.toggle("hidden");
+    });
+    // Dark mode toggle functionality
+    const darkModeToggle = navbar.querySelector("#darkModeToggle");
+    const mobileDarkModeToggle = navbar.querySelector("#mobileDarkModeToggle");
+    const toggleDarkMode = ()=>{
+        const isDark = document.documentElement.classList.contains("dark");
+        if (isDark) {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("darkMode", "false");
+        } else {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("darkMode", "true");
+        }
+    };
+    if (darkModeToggle) darkModeToggle.addEventListener("click", toggleDarkMode);
+    if (mobileDarkModeToggle) mobileDarkModeToggle.addEventListener("click", ()=>{
+        toggleDarkMode();
+        mobileMenu?.classList.add("hidden");
+    });
+    const navLinks = navbar.querySelectorAll(".nav-link");
+    navLinks.forEach((link)=>{
+        link.addEventListener("click", (e)=>{
+            e.preventDefault();
+            const route = link.getAttribute("data-route");
+            if (route) {
+                navigateTo(route);
+                mobileMenu?.classList.add("hidden");
+            }
+        });
+    });
+    const searchInput = navbar.querySelector("#searchInput");
+    const resultList = navbar.querySelector("#searchResults");
+    let debounceTimer;
+    const hideDropdown = ()=>{
+        resultList?.classList.remove("opacity-100");
+        resultList?.classList.add("opacity-0", "pointer-events-none");
+    };
+    const showDropdown = ()=>{
+        resultList?.classList.remove("opacity-0", "pointer-events-none");
+        resultList?.classList.add("opacity-100");
+    };
+    if (searchInput && resultList) {
+        searchInput.addEventListener("input", (e)=>{
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async ()=>{
+                const query = e.target.value.trim();
+                resultList.innerHTML = "";
+                if (!query) return hideDropdown();
+                const productId = parseInt(query, 10);
+                if (!isNaN(productId)) {
+                    const matched = await (0, _api.fetchProductById)(productId);
+                    if (matched && matched.id) {
+                        const resultItem = document.createElement("li");
+                        resultItem.className = "cursor-pointer px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100";
+                        resultItem.textContent = matched.title || `Product ${matched.id}`;
+                        resultItem.addEventListener("click", ()=>{
+                            handleSearch(matched.id.toString());
+                            hideDropdown();
+                        });
+                        resultList.appendChild(resultItem);
+                        showDropdown();
+                    } else {
+                        const noMatch = document.createElement("li");
+                        noMatch.className = "px-4 py-2 text-gray-400 dark:text-gray-500 italic";
+                        noMatch.textContent = "No product found.";
+                        resultList.appendChild(noMatch);
+                        showDropdown();
+                    }
+                } else {
+                    const results = await (0, _api.fetchProductsBySearch)(query);
+                    if (results.length > 0) {
+                        results.forEach((product)=>{
+                            const resultItem = document.createElement("li");
+                            resultItem.className = "cursor-pointer px-4 py-2 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100";
+                            resultItem.textContent = product.title;
+                            resultItem.addEventListener("click", ()=>{
+                                handleSearch(product.id.toString());
+                                hideDropdown();
+                            });
+                            resultList.appendChild(resultItem);
+                        });
+                        showDropdown();
+                    } else {
+                        const noMatch = document.createElement("li");
+                        noMatch.className = "px-4 py-2 text-gray-400 dark:text-gray-500 italic";
+                        noMatch.textContent = "No product found.";
+                        resultList.appendChild(noMatch);
+                        showDropdown();
+                    }
+                }
+            }, 300);
+        });
+        searchInput.addEventListener("keypress", (e)=>{
+            if (e.key === "Enter") {
+                const query = searchInput.value.trim();
+                handleSearch(query);
+                hideDropdown();
+            }
+        });
+        document.addEventListener("click", (event)=>{
+            if (!navbar.contains(event.target)) hideDropdown();
+        });
+    }
+    updateActiveNav(window.location.pathname);
+}
+function initializeDarkMode() {
+    // Check for saved preference or default to light mode
+    const savedMode = localStorage.getItem("darkMode");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (savedMode === "true" || savedMode === null && prefersDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+}
+function handleSearch(query) {
+    const id = parseInt(query, 10);
+    const route = !isNaN(id) ? `/details?id=${id}` : `/details?search=${encodeURIComponent(query)}`;
+    navigateTo(route);
+}
+function navigateTo(route) {
+    history.pushState(null, "", route);
+    updateActiveNav(route);
+    window.dispatchEvent(new CustomEvent("navigate", {
+        detail: {
+            route
+        }
+    }));
+}
+function updateActiveNav(currentRoute) {
+    const links = document.querySelectorAll(".nav-link");
+    links.forEach((link)=>{
+        const route = link.getAttribute("data-route") || "/";
+        const isActive = currentRoute === route || route !== "/" && currentRoute.startsWith(route);
+        link.classList.toggle("text-blue-600", isActive);
+        link.classList.toggle("dark:text-blue-400", isActive);
+        link.classList.toggle("bg-blue-50", isActive);
+        link.classList.toggle("dark:bg-gray-800", isActive);
+    });
+}
+window.addEventListener("popstate", ()=>{
+    updateActiveNav(window.location.pathname);
+    window.dispatchEvent(new CustomEvent("navigate", {
+        detail: {
+            route: window.location.pathname
+        }
+    }));
+});
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"11wJK":[function(require,module,exports,__globalThis) {
+},{"../api":"hKNQC","@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"11wJK":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Footer", ()=>Footer);
 function Footer() {
     const footer = document.createElement("footer");
-    footer.className = "bg-white dark:bg-gray-800 flex justify-center items-center w-full p-5";
     footer.innerHTML = `
-    <h1>Footer</h1>
+    <footer class="bg-black text-white py-10 border-t border-gray-700">
+      <div class="container mx-auto px-6 md:px-12 lg:px-20">
+        <div class="flex flex-wrap justify-between items-start gap-10">
+          <!-- About Section -->
+          <div class="w-full md:w-1/2 lg:w-1/3">
+            <h3 class="text-xl font-semibold mb-4">About</h3>
+            <p class="text-white/80 leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vel mi ut felis tempus commodo nec id erat. Suspendisse consectetur dapibus velit ut lacinia.
+            </p>
+          </div>
+
+          <!-- Social Links -->
+          <div class="w-full md:w-1/2 lg:w-1/3">
+            <h3 class="text-xl font-semibold mb-4">Follow Us</h3>
+            <div class="flex space-x-4">
+              <!-- Twitter -->
+              <a href="#" aria-label="Twitter" class="text-white hover:text-gray-300">
+                <i class="fa-brands fa-twitter"></i>
+              </a>
+              <!-- Facebook -->
+              <a href="#" aria-label="Facebook" class="text-white hover:text-gray-300">
+                <i class="fa-brands fa-facebook"></i>
+              </a>
+              <!-- Instagram -->
+              <a href="#" aria-label="Instagram" class="text-white hover:text-gray-300">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <!-- LinkedIn -->
+              <a href="#" aria-label="LinkedIn" class="text-white hover:text-gray-300">
+                <i class="fa-brands fa-linkedin"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="mt-10 text-center text-white/60 text-sm">
+          &copy; ${new Date().getFullYear()} Your Company. All rights reserved.
+        </div>
+      </div>
+    </footer>
   `;
     return footer;
 }
