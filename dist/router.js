@@ -19,22 +19,22 @@ function initRouter() {
     });
     renderRoute();
 }
-function renderRoute() {
+async function renderRoute() {
     const pathname = window.location.pathname;
-    let contentFn;
+    let content;
     switch (pathname) {
         case "/":
-            contentFn = home_1.renderHome;
+            content = (0, home_1.renderHome)();
             break;
         case "/products":
-            contentFn = products_1.renderProducts;
+            content = await (0, products_1.renderProducts)();
             break;
         case "/details":
-            contentFn = details_1.renderDetails;
+            content = (0, details_1.renderDetails)();
             break;
         default:
-            contentFn = notfound_1.renderNotFound;
+            content = (0, notfound_1.renderNotFound)();
             break;
     }
-    (0, layout_1.createLayout)(contentFn);
+    (0, layout_1.createLayout)(() => content);
 }
