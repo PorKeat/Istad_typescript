@@ -1,6 +1,7 @@
 export function ProductSkeletonGrid(count: number = 8): HTMLElement {
   const skeletonGrid = document.createElement("div");
-  skeletonGrid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full";
+  skeletonGrid.className =
+    "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full";
 
   for (let i = 0; i < count; i++) {
     const skeletonCard = document.createElement("div");

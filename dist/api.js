@@ -10,10 +10,21 @@ const axios_1 = __importDefault(require("axios"));
 const baseUrl = "https://dummyjson.com";
 const endPoint = "/products";
 async function fetchProducts() {
+    const allProducts = [];
+    const limit = 30;
+    let skip = 0;
+    let total = Infinity;
     try {
-        const response = await axios_1.default.get(`${baseUrl}${endPoint}`);
-        console.log("Fetched service data:", response.data);
-        return response.data.products;
+        while (allProducts.length < total) {
+            const response = await axios_1.default.get(`${baseUrl}${endPoint}?limit=${limit}&skip=${skip}`);
+            const data = response.data;
+            const products = data.products;
+            total = data.total;
+            allProducts.push(...products);
+            skip += limit;
+        }
+        console.log(`Fetched all products: ${allProducts.length}`);
+        return allProducts;
     }
     catch (error) {
         console.error("Fetch error:", error);

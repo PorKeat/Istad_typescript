@@ -3,19 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderProducts = renderProducts;
 const api_1 = require("../api");
 const Skeleton_1 = require("../components/Skeleton");
-async function renderProducts() {
-    const products = await (0, api_1.fetchProducts)();
+function renderProducts() {
     const container = document.createElement("div");
-    let filteredProducts = [...products];
-    let currentSort = "featured";
     container.innerHTML = `
-    <main class="min-h-screen bg-white">
+    <main class="min-h-screen bg-white dark:bg-gray-900 transition-colors">
       <!-- Header Section -->
       <section class="bg-black text-white py-16">
         <div class="container mx-auto px-6 text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">
-            All Products
-          </h1>
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">All Products</h1>
           <p class="text-gray-300 text-lg max-w-2xl mx-auto">
             Discover our complete collection of premium products at unbeatable prices
           </p>
@@ -24,16 +19,16 @@ async function renderProducts() {
       </section>
 
       <!-- Filter Section -->
-      <section class="bg-gray-50 py-8 border-b">
+      <section class="bg-gray-50 dark:bg-gray-950 py-8 border-b border-gray-200 dark:border-gray-700">
         <div class="container mx-auto px-6">
           <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-              <span id="product-count" class="text-gray-600 font-medium">
-                ${products.length} Products
+              <span id="product-count" class="text-gray-600 dark:text-gray-300 font-medium">
+                Loading...
               </span>
             </div>
             <div class="flex items-center gap-4">
-              <select id="sort-select" class="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black">
+              <select id="sort-select" class="bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white">
                 <option value="featured">Sort by: Featured</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
@@ -46,17 +41,17 @@ async function renderProducts() {
       </section>
 
       <!-- Products Grid -->
-      <section class="py-16 bg-gray-50 relative">
-        <div class="container mx-auto px-6">
-          <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            ${renderProductCards(filteredProducts)}
+      <section class="py-16 bg-gray-50 dark:bg-gray-950 relative">
+        <div class="container mx-auto px-6 ">
+          <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full"
+            <!-- Skeleton or product cards will be injected here -->
           </div>
         </div>
 
         <!-- Background Decorations -->
         <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div class="absolute top-1/4 -left-20 w-40 h-40 bg-gray-200/50 rounded-full blur-3xl"></div>
-          <div class="absolute bottom-1/4 -right-20 w-60 h-60 bg-gray-300/50 rounded-full blur-3xl"></div>
+          <div class="absolute top-1/4 -left-20 w-40 h-40 bg-gray-200/50 dark:bg-gray-600/30 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-1/4 -right-20 w-60 h-60 bg-gray-300/50 dark:bg-gray-700/30 rounded-full blur-3xl"></div>
         </div>
       </section>
 
@@ -77,41 +72,40 @@ async function renderProducts() {
   `;
     const productsGrid = container.querySelector("#products-grid");
     if (productsGrid) {
-        const skeleton = (0, Skeleton_1.ProductSkeletonGrid)();
-        productsGrid.appendChild(skeleton);
+        productsGrid.appendChild((0, Skeleton_1.ProductSkeletonGrid)());
     }
-    function sortProducts(products, sortBy) {
-        const sorted = [...products];
-        switch (sortBy) {
-            case "price-low":
-                return sorted.sort((a, b) => {
-                    const priceA = a.price * (1 - a.discountPercentage / 100);
-                    const priceB = b.price * (1 - b.discountPercentage / 100);
-                    return priceA - priceB;
-                });
-            case "price-high":
-                return sorted.sort((a, b) => {
-                    const priceA = a.price * (1 - a.discountPercentage / 100);
-                    const priceB = b.price * (1 - b.discountPercentage / 100);
-                    return priceB - priceA;
-                });
-            case "rating":
-                return sorted.sort((a, b) => (b.rating || 4) - (a.rating || 4));
-            case "discount":
-                return sorted.sort((a, b) => b.discountPercentage - a.discountPercentage);
-            default:
-                return sorted;
+    (0, api_1.fetchProducts)().then((products) => {
+        let filteredProducts = [...products];
+        let currentSort = "featured";
+        const sortSelect = container.querySelector("#sort-select");
+        const productCount = container.querySelector("#product-count");
+        function sortProducts(products, sortBy) {
+            const sorted = [...products];
+            switch (sortBy) {
+                case "price-low":
+                    return sorted.sort((a, b) => a.price * (1 - a.discountPercentage / 100) -
+                        b.price * (1 - b.discountPercentage / 100));
+                case "price-high":
+                    return sorted.sort((a, b) => b.price * (1 - b.discountPercentage / 100) -
+                        a.price * (1 - a.discountPercentage / 100));
+                case "rating":
+                    return sorted.sort((a, b) => (b.rating || 4) - (a.rating || 4));
+                case "discount":
+                    return sorted.sort((a, b) => b.discountPercentage - a.discountPercentage);
+                default:
+                    return sorted;
+            }
         }
-    }
-    function renderProductCards(productList) {
-        return productList
-            .map((product) => `
-        <div class="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200">
+        function renderProductCards(productList) {
+            return productList
+                .map((product) => `
+        <div class="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border border-gray-200 dark:border-gray-700">
           <a href="/details?id=${product.id}" class="block">
             <div class="relative overflow-hidden">
               <img 
                 src="${product.images[0]}" 
                 alt="${product.title}" 
+                loading="lazy"
                 class="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-110" 
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -121,26 +115,27 @@ async function renderProducts() {
             </div>
             <div class="p-6">
               <div class="flex items-center justify-between mb-2">
-                <span class="text-black font-medium text-sm uppercase tracking-wider bg-gray-100 px-3 py-1 rounded-full">
+                <span class="text-black dark:text-white font-medium text-sm uppercase tracking-wider bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                   ${product.brand}
                 </span>
-                <div class="flex text-black">
+                <div class="flex text-black dark:text-yellow-400">
                   ${"★".repeat(Math.floor(product.rating || 4))}${"☆".repeat(5 - Math.floor(product.rating || 4))}
                 </div>
               </div>
-              <h3 class="text-lg font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-black transition-colors">
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-black dark:group-hover:text-white transition-colors">
                 ${product.title}
               </h3>
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                  <p class="text-2xl font-bold text-black">
-                    ${(product.price * (1 - product.discountPercentage / 100)).toFixed(2)}
+                  <p class="text-2xl font-bold text-black dark:text-white">
+                    ${(product.price *
+                (1 - product.discountPercentage / 100)).toFixed(2)}
                   </p>
-                  <del class="text-gray-400 text-lg">
+                  <del class="text-gray-400 dark:text-gray-500 text-lg">
                     ${product.price.toFixed(2)}
                   </del>
                 </div>
-                <button class="bg-black hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                <button class="bg-black hover:bg-gray-800 text-white p-3 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-700">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
                     <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
@@ -151,26 +146,25 @@ async function renderProducts() {
           </a>
         </div>
       `)
-            .join("");
-    }
-    function updateProductDisplay() {
-        const productsGrid = container.querySelector("#products-grid");
-        const productCount = container.querySelector("#product-count");
-        if (productsGrid && productCount) {
-            productsGrid.innerHTML = renderProductCards(filteredProducts);
-            productCount.textContent = `${filteredProducts.length} Products`;
+                .join("");
         }
-    }
-    setTimeout(() => {
-        const sortSelect = container.querySelector("#sort-select");
+        function updateProductDisplay() {
+            if (productsGrid) {
+                productsGrid.innerHTML = renderProductCards(filteredProducts);
+            }
+            if (productCount) {
+                productCount.textContent = `${filteredProducts.length} Products`;
+            }
+        }
+        filteredProducts = sortProducts(products, currentSort);
+        updateProductDisplay();
         if (sortSelect) {
             sortSelect.addEventListener("change", (e) => {
-                const target = e.target;
-                currentSort = target.value;
+                currentSort = e.target.value;
                 filteredProducts = sortProducts(products, currentSort);
                 updateProductDisplay();
             });
         }
-    }, 0);
+    });
     return container;
 }
